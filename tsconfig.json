@@ -1,0 +1,14 @@
+{
+  "compilerOptions": {
+    "sourceMap": true,
+    "lib": ["es7", "dom", "esnext"],
+    "strictNullChecks": true,
+    "alwaysStrict": true,
+    "target": "es5",
+    "allowJs": true,
+    "jsx": "React",
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "moduleResolution": "node"
+  }
+}
