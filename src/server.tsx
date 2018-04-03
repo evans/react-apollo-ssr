@@ -1,6 +1,11 @@
 // This example uses React Router v4, although it should work
 // equally well with other routers that support SSR
 
+process.on('unhandledRejection', (reason, p) => {
+  console.log('Unhandled Rejection at: Promise', p, 'reason:', reason);
+  console.log(reason.stack);
+});
+
 import { ApolloProvider, getDataFromTree } from 'react-apollo';
 import { ApolloClient } from 'apollo-client';
 import { createHttpLink } from 'apollo-link-http';
@@ -12,7 +17,11 @@ import fetch from 'node-fetch';
 import React from 'react';
 import ReactDOM from 'react-dom/server';
 
+import bodyParser from 'body-parser';
+import { graphqlExpress } from 'apollo-server-express';
+
 import Layout from './routes/Layout';
+import schema from './schema';
 
 function Html({ content, state }) {
   return (
@@ -41,7 +50,7 @@ app.use((req, res) => {
     // Remember that this is the interface the SSR server will use to connect to the
     // API server, so we need to ensure it isn't firewalled, etc
     link: createHttpLink({
-      uri: 'http://localhost:3010',
+      uri: 'http://localhost:3010/graphql',
       credentials: 'same-origin',
       headers: {
         cookie: req.header('Cookie'),
@@ -83,5 +92,17 @@ app.listen(basePort, () =>
   console.log(
     // eslint-disable-line no-console
     `app Server is now running on http://localhost:${basePort}`,
+  ),
+);
+
+const graphqlApp = express();
+const graphqlPort = 3010;
+
+graphqlApp.use('/graphql', bodyParser.json(), graphqlExpress({ schema }));
+
+graphqlApp.listen(graphqlPort, () =>
+  console.log(
+    // eslint-disable-line no-console
+    `graphql Server is now running on http://localhost:${graphqlPort}`,
   ),
 );
