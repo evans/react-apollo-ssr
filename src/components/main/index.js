@@ -45,7 +45,8 @@ import { Redirect, history } from 'kit/lib/routing';
 // Child React components. Note:  We can either export one main React component
 // per file, or in the case of <Home>, <Page> and <WhenFound>, we can group
 // multiple components per file where it makes sense to do so
-import GraphQLMessage from 'components/graphql';
+import _GraphQLMessage from 'components/graphql';
+import { GraphQLMessage } from 'components/graphql';
 import { Home, Page, WhenNotFound } from 'components/routes';
 // import ReduxCounter from 'components/redux';
 import Stats from 'components/stats';

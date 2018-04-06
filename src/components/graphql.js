@@ -13,7 +13,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 // GraphQL
-import { graphql } from 'react-apollo';
+import { graphql, Query } from 'react-apollo';
 
 /* App */
 
@@ -28,8 +28,7 @@ import allMessages from 'src/graphql/queries/all_messages.gql';
 // `react-apollo`'s `graphql` HOC/decorator and pass in the query that this
 // component requires. Note: This is not to be confused with the `graphql`
 // lib, which is used on the server-side to initially define the schema
-@graphql(allMessages)
-export default class GraphQLMessage extends React.PureComponent {
+export class _GraphQLMessage extends React.PureComponent {
   static propTypes = {
     data: PropTypes.shape({
       message: PropTypes.shape({
@@ -68,6 +67,49 @@ export default class GraphQLMessage extends React.PureComponent {
         </h2>
         <h2>Currently loading?: {isLoading}</h2>
       </div>
+    );
+  }
+}
+export default graphql(allMessages)(_GraphQLMessage);
+
+export class GraphQLMessage extends React.PureComponent {
+  refetched = false;
+  render() {
+    // const { data } = this.props;
+    // setTimeout(() => {
+    //   console.log('refetching');
+    //   data.refetch().then(console.log);
+    // }, 500);
+
+    // Since we're dealing with async GraphQL data, we defend against the
+    // data not yet being loaded by checking to see that we have the `message`
+    // key on our returned object
+    // const message = data.message && data.message.text;
+
+    // Apollo will tell us whether we're still loading.  We can also use this
+    // check to ensure we have a fully returned response
+    // const isLoading = data.loading ? 'yes' : 'nope';
+    return (
+      <Query query={allMessages}>
+        {({ data, loading, refetch }) => {
+          if (!loading && !this.refetched) {
+            setInterval(() => {
+              console.log('refetching');
+              // refetch().then(console.log);
+            }, 500);
+            this.refetched = true;
+          }
+          return (
+            <div>
+              <h2>
+                Message from GraphQL server:{' '}
+                <em>{(data.message && data.message.text) || null}</em>
+              </h2>
+              <h2>Currently loading?: {loading}</h2>
+            </div>
+          );
+        }}
+      </Query>
     );
   }
 }
